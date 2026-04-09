@@ -1,0 +1,16 @@
+pydantic
+pydantic-settings
+sqlalchemy
+fastapi
+uvicorn
+python-dotenv
+sentence-transformers
+pytest 
+httpx
+pytest-asyncio
+
+langchain_core
+langchain_openai
+langchain_chroma
+langchain_huggingface
+langchain_groq
