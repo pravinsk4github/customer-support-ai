@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     chroma_persist_directory: str = "./chroma_db"
     chroma_collection_name: str = "support_faqs"
 
+    hf_token: str
     groq_api_key: str
     groq_model: str 
     embedding_model_name: str

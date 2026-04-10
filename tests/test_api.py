@@ -8,7 +8,9 @@ client = TestClient(app)
 fallback_phrases = [
     "clarify",
     "don't have enough context",
-    "do not have enough context"
+    "do not have enough context",
+    "do not have enough information",
+    "don’t have enough information"
 ]
 
 def test_chat_returns_fallback_for_vague_question_in_new_session():

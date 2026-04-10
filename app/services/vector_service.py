@@ -22,7 +22,10 @@ class VectorService:
     def __init__(self):
         # self.embedding_model = OpenAIEmbeddings()
         self.embedding_model = HuggingFaceEmbeddings(
-            model_name=settings.embedding_model_name
+            model_name=settings.embedding_model_name,
+            model_kwargs={
+                "token": settings.hf_token
+            }
         )
         self.vector_store = Chroma(
             collection_name=settings.chroma_collection_name,

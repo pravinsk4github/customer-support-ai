@@ -7,7 +7,11 @@ from app.services.chat_service import ChatService
 
 router = APIRouter(prefix="/chat", tags=["Chat"])
 
-@router.post("/", response_model=ChatResponse)
+@router.post("/", 
+    response_model=ChatResponse,
+    summary="AI customer support chatbot",
+    description="Returns an AI-generated response using RAG with confidence validation"
+)
 def chat(payload: ChatRequest, db: Session = Depends(get_db)):
     service = ChatService(db)
     result = service.ask(
