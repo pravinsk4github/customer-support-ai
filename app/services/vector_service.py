@@ -13,6 +13,10 @@ from langchain_huggingface import HuggingFaceEmbeddings
 # from langchain_openai import OpenAIEmbeddings
 
 from app.config import settings
+from app.core.exception import ServiceUnavailableError
+from app.utils.logger import setup_logger
+
+logger = setup_logger(__name__)
 
 class VectorService:
     def __init__(self):
@@ -47,5 +51,14 @@ class VectorService:
         return self.vector_store.as_retriever(k={"k": search_k})
 
     def similarity_search_with_score(self, query: str, k: int | None = None):
-        search_k = k or settings.retrieval_k
-        return self.vector_store.similarity_search_with_score(query=query, k=search_k)
+        try:
+            search_k = k or settings.retrieval_k
+            return self.vector_store.similarity_search_with_score(query=query, k=search_k)
+        except Exception as exc:
+            logger.exception(
+                "Vector retrieval failed",
+                extra={
+                    "query": query
+                }
+            )
+            raise ServiceUnavailableError("Knowledge retrieval is temporarily unavailable") from exc

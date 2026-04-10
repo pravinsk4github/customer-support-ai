@@ -3,7 +3,7 @@ from fastapi import Request, HTTPException, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-from app.core.exception import AppException
+from app.core.exception import AppException, ErrorCodes
 from app.api.error_responses import ErrorResponse, ErrorDetail
 from app.utils.logger import setup_logger
 
@@ -24,7 +24,7 @@ async def http_exception_handler(request: Request, exc: HTTPException) -> JSONRe
 
     response = ErrorResponse(
         error=ErrorDetail(
-            code="http_error",
+            code=ErrorCodes.HTTP_ERROR,
             message=str(exc.detail)
         ),
         request_id=request_id
@@ -51,7 +51,7 @@ async def validation_exception_handler(
 
     response = ErrorResponse(
         error=ErrorDetail(
-            code="validation_error",
+            code=ErrorCodes.INVALID_REQUEST,
             message="Invalid request payload",
         ),
         request_id=request_id,
@@ -76,7 +76,7 @@ async def unhandled_exception_handler(request: Request, exc: Exception) -> JSONR
 
     response = ErrorResponse(
         error=ErrorDetail(
-            code="internal_server_error",
+            code=ErrorCodes.INTERNAL_SERVER_ERROR,
             message="Something went wrong. Please try again later.",
         ),
         request_id=request_id,

@@ -2,7 +2,7 @@ from langchain_core.documents import Document
 from sqlalchemy.orm import Session
 
 from app.config import settings
-from app.core.exception import NotFoundError
+from app.core.exception import NotFoundError, ServiceUnavailableError
 from app.repositories.chat_repository import ChatRepository
 from app.rag.retriever import FAQRetriever
 from app.rag.chains import build_support_chain
@@ -86,10 +86,24 @@ class ChatService:
 
     def _fallback_response(self) -> str:
         return (
-            "I’m sorry, but I don’t have enough context to answer that accurately. "
-            "Could you please clarify which point you mean or provide a bit more detail?"
+            "I don’t have enough information to answer that confidently."
         )
- 
+
+    def generate_answer(
+        self, history_text: str, context_text: str, question: str
+    ) -> str:
+        try:
+            return self.chain.invoke(
+                {
+                    "history": history_text,
+                    "context": context_text,
+                    "question": question,
+                }
+            )
+        except Exception as exc:
+            logger.exception("LLM invocation failed")
+            raise ServiceUnavailableError("AI response generation in temporarily unavailable") from exc
+
     def ask(self, session_id: str, user_message: str) -> dict:
         logger.info("chat_request session=%s message=%s", session_id, user_message)
         self.chat_repository.create_session_if_not_exists(session_id)
@@ -137,15 +151,9 @@ class ChatService:
             }
 
         context_text = self._format_context(filtered_docs)
-        
-        answer = self.chain.invoke(
-            {
-                "history": history_text,
-                "context": context_text,
-                "question": user_message
-            }
-        )
-        
+
+        answer = self.generate_answer(history_text, context_text, user_message)
+
         self.chat_repository.add_message(
             ChatMessageCreate(
                 session_id=session_id,

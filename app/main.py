@@ -1,5 +1,7 @@
-from fastapi import FastAPI, HTTPException
+import sqlite3
+from fastapi import FastAPI, HTTPException, status
 from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 from app.api.exception_handlers import (
     app_exception_handler,
     http_exception_handler, 
@@ -13,6 +15,8 @@ from app.models import Base
 from app.api.routes_faq import router as faq_router
 from app.api.routes_ingestion import router as ingestion_router
 from app.api.routes_chat import router as chat_router
+from app.schemas import HealthResponse, ReadinessResponse
+from app.config import settings
 
 app = FastAPI(title="Customer Support AI")
 
@@ -29,6 +33,21 @@ app.include_router(faq_router)
 app.include_router(ingestion_router)
 app.include_router(chat_router)
 
-@app.get("/")
+@app.get("/health", response_model=HealthResponse)
 def health_check():
-    return {"Status": "ok"}
+    return HealthResponse(status="OK")
+
+@app.get("/ready", response_model=ReadinessResponse)
+def ready_check():
+    try:
+        conn = sqlite3.connect(settings.database_url)
+        conn.execute("SELECT 1")
+        conn.close()
+        return ReadinessResponse(status="OK")
+    except sqlite3.Error:
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={"status": "not_ready"}
+        )
+
+

@@ -1,10 +1,12 @@
 from fastapi import status
 
 class ErrorCodes:
+    HTTP_ERROR = "http_error"    
     RESOURCE_NOT_FOUND = "resource_not_found"
     INVALID_REQUEST = "invalid_request"
     DATABASE_ERROR = "database_error"
     INTERNAL_SERVER_ERROR = "internal_server_error"
+    SERVICE_UNAVAILABLE="service_unavailable"
 
 class AppException(Exception):
     """Base exception for know application error"""
@@ -45,4 +47,12 @@ class RepositoryError(AppException):
             message=message,
             code=ErrorCodes.DATABASE_ERROR,
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+class ServiceUnavailableError(AppException):
+    def __init__(self, message: str = "Service temporarily unavailable") -> None:
+        super().__init__(
+            message=message,
+            code=ErrorCodes.SERVICE_UNAVAILABLE,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE
         )

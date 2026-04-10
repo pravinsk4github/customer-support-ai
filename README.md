@@ -28,9 +28,9 @@ This project demonstrates how to build a reliable AI system using **Retrieval-Au
 ```
 Client → FastAPI API → Service Layer → Repository Layer → SQLite (FAQs)
                                ↓
-                         Vector Store (Chroma)
+                      Vector Store (Chroma)
                                ↓
-                           LLM (LangChain)
+                        LLM (LangChain)
 ```
 
 ### Design Principles
@@ -60,16 +60,16 @@ The system improves response accuracy using **multi-stage validation**:
 
 ## 🛠️ Tech Stack
 
-| Layer            | Technology |
-|------------------|-----------|
-| Backend API      | FastAPI |
-| Language         | Python |
-| AI Framework     | LangChain |
-| Vector Database  | Chroma |
-| Data Store       | SQLite |
-| Embeddings       | OpenAI / compatible |
-| Logging          | Python logging (structured) |
-| Architecture     | Clean layered design |
+| Layer            | Technology                     |
+|------------------|--------------------------------|
+| Backend API      | FastAPI                        |
+| Language         | Python                         |
+| AI Framework     | LangChain                      |
+| Vector Database  | Chroma                         |
+| Data Store       | SQLite                         |
+| Embeddings       | OpenAI / compatible            |
+| Logging          | Python logging (structured)    |
+| Architecture     | Clean layered design           |
 
 ---
 

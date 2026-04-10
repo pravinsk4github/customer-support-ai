@@ -16,10 +16,10 @@ venv/
 .vscode/
 .idea/
 
-# Vector DB
+# data
 data/
 chroma_db/
-.db
+*.db
 
 # Uploaded files
 uploads/

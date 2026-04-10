@@ -8,13 +8,11 @@ class BaseFAQModel(BaseModel):
     tags: Optional[str] = None
     is_active: int = 1
 
-
 class FAQCreate(BaseFAQModel):
     pass
 
 class FAQResponse(BaseFAQModel):
-    id: int
-    
+    id: int    
     model_config = ConfigDict(from_attributes=True)
 
 class FAQUpdate(BaseModel):
@@ -33,8 +31,13 @@ class ChatRequest(BaseModel):
     session_id: str
     message: str
 
-
 class ChatResponse(BaseModel):
     session_id: str
     answer: str
     sources: list[dict]
+
+class HealthResponse(BaseModel):
+    status: str
+
+class ReadinessResponse(BaseModel):
+    status: str

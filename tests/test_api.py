@@ -1,5 +1,6 @@
 from fastapi.testclient import TestClient
 
+from app.core.exception import ErrorCodes
 from app.main import app
 
 client = TestClient(app)
@@ -55,3 +56,54 @@ def test_chat_returns_grounded_answer_for_known_question():
     first_source = data["sources"][0]
     assert "faq_id" in first_source
     assert "category" in first_source
+
+def test_health_endpoint():
+    response = client.get("/health")
+    assert response.status_code == 200
+    assert response.json()["status"] == "OK"
+
+def test_ready_endpoint():
+    response = client.get("/ready")
+    assert response.status_code in (200, 503)
+
+# def test_not_found_error():
+#     payload = {
+#         "session_id": "test",
+#         "message": "test"
+#     }
+#     response = client.post("/chat/", json=payload)
+
+#     assert response.status_code == 404
+
+#     data = response.json()
+
+#     assert data["error"]["code"] == "resource_not_found"
+#     assert "message" in data["error"]
+#     assert "request_id" in data
+
+def test_validation_error():
+    response = client.post(
+        "/chat/",
+        json={
+            "session_id": "test"
+            # missing "message"
+        }
+    )
+
+    assert response.status_code == 422
+
+    data = response.json()
+
+    assert data["error"]["code"] == ErrorCodes.INVALID_REQUEST
+    assert "request_id" in data
+
+def test_request_id_header():
+    response = client.post(
+        "/chat/",
+        json={
+            "session_id": "test",
+            "message": "hello"
+        }
+    )
+
+    assert "X-Request-ID" in response.headers
